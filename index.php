@@ -1,0 +1,300 @@
+<?php
+$host = 'localhost';
+$db_user = 'root';
+$db_pass = '비밀번호';
+$db_name = 'homepage';
+
+$conn = mysqli_connect($host, $db_user, $db_pass, $db_name);
+if (!$conn) {
+    die("❌ 마리아DB 창고 연결 실패: " . mysqli_connect_error());
+}
+
+mysqli_set_charset($conn, "utf8");
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'write') {
+    $user = mysqli_real_escape_string($conn, $_POST['username']);
+    $text = mysqli_real_escape_string($conn, $_POST['content']);
+    
+    if (!empty($user) && !empty($text)) {
+        $sql = "INSERT INTO guestbook (username, content) VALUES ('$user [MEMBER]', '$text')";
+        mysqli_query($conn, $sql);
+    }
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
+}
+
+$query = "SELECT * FROM guestbook ORDER BY id DESC";
+$result = mysqli_query($conn, $query);
+?>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>silas's homepage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DungGeunMo&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #31a2e7;
+            background-image: linear-gradient(180deg, #1d79c7 0%, #31a2e7 50%, #63c773 90%, #399c42 100%);
+            font-family: 'DungGeunMo', 'Press Start 2P', monospace;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: white;
+            padding: 20px 0;
+            box-sizing: border-box;
+        }
+
+        .window {
+            background-color: #cccccc;
+            border: 4px solid #000000;
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.3);
+            width: 380px; 
+            padding: 4px;
+            image-rendering: pixelated;
+            margin-bottom: 20px;
+        }
+
+        .title-bar {
+            background-color: #0000aa;
+            padding: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+            font-weight: bold;
+            border-bottom: 4px solid #000000;
+        }
+
+        .close-btn {
+            border: 2px solid #000000;
+            background-color: #cccccc;
+            color: black;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            line-height: 16px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .content {
+            background-color: #ffffff;
+            border: 4px solid #000000;
+            margin-top: 4px;
+            padding: 20px 10px;
+            text-align: center;
+            color: #000000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .penguin-container {
+            width: 100px;
+            height: 110px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 5px;
+            animation: bounce 0.6s infinite alternate;
+        }
+
+        .tux-pixel {
+            width: 4px; height: 4px;
+            box-shadow: 
+                0 -20px #000, 4px -20px #000, 8px -20px #000, -4px -20px #000, -8px -16px #000, 12px -16px #000, -12px -12px #000, 16px -12px #000, -4px -12px #fff, 0 -12px #fff, 8px -12px #fff, 12px -12px #fff, -12px -8px #000, 16px -8px #000, -4px -8px #000, 0 -8px #fff, 8px -8px #000, 12px -8px #fff, -12px -4px #000, -8px -4px #ffa500, -4px -4px #ffa500, 0 -4px #ffa500, 4px -4px #ffa500, 8px -4px #ffa500, 12px -4px #ffa500, 16px -4px #000, -8px 0 #000, -4px 0 #ffa500, 0 0 #ffa500, 4px 0 #ffa500, 8px 0 #ffa500, 12px 0 #000, -16px 4px #000, -12px 4px #000, -8px 4px #000, -4px 4px #fff, 0 4px #fff, 4px 4px #fff, 8px 4px #fff, 12px 4px #000, 16px 4px #000, 20px 4px #000, -20px 8px #000, -16px 8px #000, -8px 8px #fff, -4px 8px #fff, 0 8px #fff, 4px 8px #fff, 8px 8px #fff, 12px 8px #fff, 16px 8px #000, 20px 8px #000, -20px 12px #000, -16px 12px #000, -8px 12px #fff, -4px 12px #fff, 0 12px #fff, 4px 12px #fff, 8px 12px #fff, 12px 12px #fff, 16px 12px #000, 20px 12px #000, -16px 16px #000, -12px 16px #000, -8px 16px #fff, -4px 16px #fff, 0 16px #fff, 4px 16px #fff, 8px 16px #fff, 12px 16px #fff, 16px 16px #000, -24px 20px #000, -20px 20px #ffa500, -16px 20px #ffa500, -12px 20px #000, 12px 20px #000, 16px 20px #ffa500, 20px 20px #ffa500, 24px 20px #000, -24px 24px #000, -20px 24px #ffa500, -16px 24px #ffa500, -12px 24px #ffa500, -8px 24px #000, 8px 24px #000, 12px 24px #ffa500, 16px 24px #ffa500, 20px 24px #ffa500, 24px 24px #000, -20px 28px #000, -16px 28px #000, -12px 28px #000, 12px 28px #000, 16px 28px #000, 20px 28px #000;
+        }
+
+        .welcome-text { font-size: 20px; margin-bottom: 8px; font-weight: bold; }
+        .sub-text { font-size: 14px; background-color: #9cd6ff; display: inline-block; padding: 4px 8px; border-radius: 4px; margin-bottom: 12px; }
+
+        .user-status { font-size: 13px; color: #ff0055; margin-bottom: 10px; font-weight: bold; }
+
+        .retro-input, .retro-textarea {
+            width: 90%;
+            border: 3px solid #000000;
+            padding: 6px;
+            font-family: 'DungGeunMo', monospace;
+            font-size: 14px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        .retro-textarea { height: 60px; resize: none; }
+
+        .board-section {
+            width: 100%;
+            border-top: 3px dashed #000000;
+            margin-top: 15px;
+            padding-top: 15px;
+            text-align: left;
+        }
+        .board-title { font-size: 15px; font-weight: bold; margin-bottom: 10px; color: #0000aa; text-align: center; }
+        .post-list { max-height: 120px; overflow-y: auto; width: 100%; padding: 0 5px; box-sizing: border-box; }
+        .post-item { background: #eeeeee; border: 2px solid #000; padding: 6px; margin-bottom: 6px; font-size: 13px; color: #333; }
+        .post-user { font-weight: bold; color: #ff5500; margin-bottom: 2px; }
+
+        .buttons { display: flex; justify-content: space-around; margin-top: 5px; width: 100%; }
+        .btn {
+            border: 3px solid #000000;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0px 4px 0px #000000;
+            font-family: 'DungGeunMo', monospace;
+        }
+        .btn-login { background-color: #ffaa00; color: #0000aa; }
+        .btn-write { background-color: #55ffff; color: #0000aa; }
+        .btn:active { margin-top: 4px; box-shadow: 0px 0px 0px #000000; }
+
+        .login-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center; align-items: center;
+            z-index: 100;
+        }
+
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+    </style>
+</head>
+<body>
+
+    <div class="window">
+        <div class="title-bar">
+            <span>ID : SILAS_SERVER</span>
+            <div class="close-btn" onclick="location.reload()">X</div>
+        </div>
+        <div class="content">
+            <div class="penguin-container">
+                <div class="tux-pixel"></div>
+            </div>
+            <div class="welcome-text">Welcome to silas's homepage!</div>
+            <div class="sub-text">CentOS 7 조은설</div>
+
+            <div class="user-status" id="userStatus">🔒 승인된 유저만 로그인이 가능합니다.</div>
+
+            <form id="writeForm" action="" method="POST" style="display: none; width: 100%;">
+                <input type="hidden" name="action" value="write">
+                <input type="hidden" name="username" id="hiddenUser" value="">
+                <textarea class="retro-textarea" name="content" placeholder="여기에 작성한 글은 진짜 마리아DB에 영구 저장됩니다!"></textarea>
+                <div class="buttons">
+                    <button type="submit" class="btn btn-write">WRITE</button>
+                </div>
+            </form>
+
+            <div class="buttons" id="loginBtnSection">
+                <button class="btn btn-login" onclick="openLogin()">LOGIN</button>
+            </div>
+
+            <div class="board-section">
+                <div class="board-title">💬 LIVE GUESTBOOK (MariaDB)</div>
+                <div class="post-list">
+                    <?php
+                    if (mysqli_num_rows($result) > 0) {
+                        while($row = mysqli_fetch_assoc($result)) {
+                            echo '<div class="post-item">';
+                            echo '<div class="post-user">' . htmlspecialchars($row['username']) . '</div>';
+                            echo '<div>' . htmlspecialchars($row['content']) . '</div>';
+                            echo '</div>';
+                        }
+                    }
+                    mysqli_close($conn);
+                    ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="login-modal" id="loginModal">
+        <div class="window" style="width: 300px;">
+            <div class="title-bar" style="background-color: #aa0000;">
+                <span>MEMBER CONNECT</span>
+                <div class="close-btn" onclick="closeLogin()">X</div>
+            </div>
+            <div class="content" style="padding: 15px 10px;">
+                <input type="text" class="retro-input" id="loginId" placeholder="사용자 ID 입력">
+                <input type="password" class="retro-input" id="loginPw" placeholder="PASSWORD 입력">
+                <button class="btn btn-login" style="background-color: #ff5555; color: white; width: 90%; margin-top: 5px;" onclick="doLogin()">CONNECT</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const memberDatabase = {
+        };
+
+        let loggedInUser = null;
+
+        function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
+        function closeLogin() { document.getElementById('loginModal').style.display = 'none'; }
+
+        function doLogin() {
+            const inputId = document.getElementById('loginId').value.trim();
+            const inputPw = document.getElementById('loginPw').value.trim();
+            
+            if(!inputId || !inputPw) { 
+                alert('ID와 비밀번호를 모두 입력해 주세요!'); 
+                return; 
+            }
+            
+            if (memberDatabase[inputId] && memberDatabase[inputId] === inputPw) {
+                loggedInUser = inputId;
+                
+                document.getElementById('userStatus').innerText = `🔓 인증 성공: ${loggedInUser} (MEMBER)`;
+                document.getElementById('userStatus').style.color = "#00aa00";
+                
+                document.getElementById('hiddenUser').value = loggedInUser;
+                document.getElementById('writeForm').style.display = "block";
+                document.getElementById('loginBtnSection').style.display = "none";
+                
+                closeLogin();
+                alert(`마리아DB 보안 인증 성공! 반갑습니다, ${loggedInUser}님.`);
+            } else {
+                alert('❌ 경고: 승인되지 않은 아이디거나 비밀번호가 틀렸습니다!');
+            }
+        }
+    </script>
+</body>
+</html>
+
+        .container { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; width: 80%; max-width: 600px; }
+        .comment-item { border-bottom: 1px solid white; padding: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Silas's Homepage</h1>
+
+        <form method="POST">
+            <input type="hidden" name="action" value="write">
+            <input type="text" name="username" placeholder="이름" required style="width: 100%; margin-bottom: 5px;">
+            <textarea name="content" placeholder="댓글을 남겨주세요" required style="width: 100%; height: 60px;"></textarea>
+            <button type="submit" style="width: 100%; margin-top: 5px;">등록</button>
+        </form>
+
+        <hr>
+
+        <h3>방명록 목록</h3>
+        <?php
+        if ($result && mysqli_num_rows($result) > 0) {
+            while($row = mysqli_fetch_assoc($result)) {
+                echo "<div class='comment-item'>";
+                echo "<strong>" . htmlspecialchars($row['username']) . "</strong><br>";
+                echo nl2br(htmlspecialchars($row['content']));
+                echo "</div>";
+            }
+        } else {
+            echo "<p>첫 번째 댓글을 남겨보세요!</p>";
+        }
+        ?>
+    </div>
+</body>
+</html>
