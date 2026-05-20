@@ -229,14 +229,7 @@ $result = mysqli_query($conn, $query);
 
     <script>
         const memberDatabase = {
-            "silas": "wjsansrk",
-            "nigel": "wjsansrk",
-            "samuel": "wjsansrk",
-            "user1": "wjsansrk",
-            "user2": "wjsansrk",
-            "user3": "wjsansrk",
-            "user4": "wjsansrk",
-            "user5": "wjsansrk"
+
         };
 
         let loggedInUser = null;
