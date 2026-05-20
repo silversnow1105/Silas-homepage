@@ -1,6 +1,6 @@
 <?php
 // DB 연결 정보
-$conn = new mysqli("localhost", "webuser", "password123", "my_db");
+$conn = new mysqli("localhost", "webuser", "비밀번호", "my_db");
 
 // 1. 간단한 테스트용 테이블 만들기 (이미 데이터가 있다면 생략 가능)
 $conn->query("CREATE TABLE IF NOT EXISTS test_table (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(50), status VARCHAR(20))");
